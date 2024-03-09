@@ -6,6 +6,7 @@
     <form method="post" novalidate>
         <h4>
             Model:
+            
         </h4>
         <p>
             <select name="model_id">
@@ -20,7 +21,8 @@
         <p>
             <select name="image_id">
                 {% for image in images %}
-                  <option value="{{ image }}" SELECTED>{{ image }}</option>
+                <option value="{{ image }}" SELECTED>{{ image }}</option>
+                                
                 {% endfor %}     
               </select>
         </p>

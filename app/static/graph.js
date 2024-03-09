@@ -45,3 +45,9 @@ function makeGraph(results) {
         }
     });
 }
+
+function displayHistogramGraph(histogram_plot) {
+    // Append the histogram plot to the specified element
+    var histogramOutputElement = document.getElementById('histogramOutput');
+    histogramOutputElement.innerHTML = histogram_plot;
+}

@@ -1,12 +1,17 @@
 import json
+
 from typing import Dict, List
+
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+
 import redis
+
 from rq import Connection, Queue
 from rq.job import Job
+
 from app.config import Configuration
 from app.forms.classification_form import ClassificationForm
 from app.ml.classification_utils import classify_image
@@ -36,7 +41,7 @@ def home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
 
 
-@app.get("/classifications")
+@app.get("/classifications",)
 def create_classify(request: Request):
     return templates.TemplateResponse(
         "classification_select.html",
@@ -58,4 +63,11 @@ async def request_classification(request: Request):
             "image_id": image_id,
             "classification_scores": json.dumps(classification_scores),
         },
+    )
+
+@app.get("/Transformations",)
+def create_transform(request: Request):
+    return templates.TemplateResponse(
+        "classification_Transform.html",
+        {"request": request, "images": list_images()},
     )

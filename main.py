@@ -75,6 +75,7 @@ def create_histogram(request: Request):
     
     return templates.TemplateResponse(
         "histogram.html",
+        
         {"request": request, "images": list_images()},
     )
 

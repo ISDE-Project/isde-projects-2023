@@ -1,6 +1,8 @@
 import json
+import os
+import random
 from typing import Dict, List
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, File, UploadFile, Form
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -9,12 +11,17 @@ from rq import Connection, Queue
 from rq.job import Job
 from app.config import Configuration
 from app.forms.classification_form import ClassificationForm
-from app.ml.classification_utils import classify_image
+from app.forms.histogram_form import HistogramForm
+from app.ml.classification_utils import classify_image , histogram_image
 from app.utils import list_images
-
+import mpld3
 
 app = FastAPI()
 config = Configuration()
+imagenet_folder = "app/static/imagenet_subset"
+json_file_path = "app/static/imagenet_subset/imagenet_labels.json"
+
+    
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
@@ -38,10 +45,12 @@ def home(request: Request):
 
 @app.get("/classifications")
 def create_classify(request: Request):
+    
     return templates.TemplateResponse(
         "classification_select.html",
         {"request": request, "images": list_images(), "models": Configuration.models},
     )
+
 
 
 @app.post("/classifications")
@@ -59,3 +68,54 @@ async def request_classification(request: Request):
             "classification_scores": json.dumps(classification_scores),
         },
     )
+
+
+@app.get("/Histogram")
+def create_histogram(request: Request):
+    
+    return templates.TemplateResponse(
+        "histogram.html",
+        {"request": request, "images": list_images()},
+    )
+
+
+@app.post("/Histogram")
+async def request_classification(request: Request):
+    form = HistogramForm(request)
+    await form.load_data()
+    image_id = form.image_id
+    histogram_type = form.histogram_type  
+    
+    if histogram_type == 'rgb':
+        histograme_load = histogram_image(img_id=image_id)
+        return templates.TemplateResponse(
+            "rgb_histogram_output.html",
+            {
+                "request": request,
+                "image_id": image_id,
+                "histogram_plot": histograme_load,
+            },
+        )
+    elif histogram_type == 'grayscale':
+        histograme_load = histogram_image(img_id=image_id)
+        return templates.TemplateResponse(
+            "grayscale_histogram_output.html",
+            {
+                "request": request,
+                "image_id": image_id,
+                "histogram_plot": histograme_load,
+            },
+        )
+    else:
+        histograme_load = histogram_image(img_id=image_id)
+        return templates.TemplateResponse(
+            "grayscale_histogram_output.html",
+            {
+                "request": request,
+                "image_id": image_id,
+
+                "histogram_plot": histograme_load,
+            },
+        )
+        
+    

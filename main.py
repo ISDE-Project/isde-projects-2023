@@ -14,8 +14,10 @@ from rq.job import Job
 
 from app.config import Configuration
 from app.forms.classification_form import ClassificationForm
+from app.forms.transformation_form import TransformationForm  #newLine
 from app.ml.classification_utils import classify_image
-from app.utils import list_images
+from app.utils import list_images 
+from app.utils_Image import Transform_img
 
 
 app = FastAPI()
@@ -69,5 +71,22 @@ async def request_classification(request: Request):
 def create_transform(request: Request):
     return templates.TemplateResponse(
         "classification_Transform.html",
-        {"request": request, "images": list_images()},
+        {"request": request, "images": list_images(), "ShowResult":False},
     )
+
+@app.post("/Transformations")
+async def handle_transformations(request: Request):
+    form = TransformationForm(request)
+    await form.load_data()
+    if not form.is_valid():
+        return form.errors
+    else:
+        image_id = form.image_id
+        transformed_image_base64 = Transform_img(form)
+        
+        return templates.TemplateResponse(
+            "classification_Transform.html",
+            {"request": request, "images": list_images(), 'imageId':image_id,'transformedImageBase64':transformed_image_base64, "ShowResult":True},
+        )
+
+    

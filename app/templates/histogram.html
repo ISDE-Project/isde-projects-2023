@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>Histograme</h1>
+    <form method="post" novalidate>
+      
+        <h4>
+            Image :
+        </h4>
+        <p>
+            <select name="image_id">
+                {% for image in images %}
+                <option value="{{ image }}" SELECTED>{{ image }}</option>
+                                
+                {% endfor %}     
+              </select>
+        </p>
+       
+    
+      <input type="hidden" name="histogram_type" id="histogram_type" value="rgb">
+
+      <button type="submit" class="btn btn-dark mb-2" onclick="setHistogramType('rgb')">RGB Histogram</button>
+      <button type="submit" class="btn btn-dark mb-2" onclick="setHistogramType('grayscale')">Grayscale Histogram</button>
+  </form>
+
+  <script>
+      function setHistogramType(type) {
+          document.getElementById('histogram_type').value = type;
+      }
+  </script>
+    
+{% endblock %}

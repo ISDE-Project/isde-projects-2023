@@ -1,8 +1,9 @@
 import json
 
+import os
+import random
 from typing import Dict, List
-
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, File, UploadFile, Form
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -14,14 +15,21 @@ from rq.job import Job
 
 from app.config import Configuration
 from app.forms.classification_form import ClassificationForm
-from app.forms.transformation_form import TransformationForm  #newLine
-from app.ml.classification_utils import classify_image
-from app.utils import list_images 
+
+from app.forms.transformation_form import TransformationForm  
+from app.forms.histogram_form import HistogramForm
+from app.ml.classification_utils import classify_image , histogram_image
+from app.utils import list_images
 from app.utils_Image import Transform_img
+import mpld3
 
 
 app = FastAPI()
 config = Configuration()
+imagenet_folder = "app/static/imagenet_subset"
+json_file_path = "app/static/imagenet_subset/imagenet_labels.json"
+
+    
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
@@ -45,10 +53,12 @@ def home(request: Request):
 
 @app.get("/classifications",)
 def create_classify(request: Request):
+    
     return templates.TemplateResponse(
         "classification_select.html",
         {"request": request, "images": list_images(), "models": Configuration.models},
     )
+
 
 
 @app.post("/classifications")
@@ -66,6 +76,7 @@ async def request_classification(request: Request):
             "classification_scores": json.dumps(classification_scores),
         },
     )
+
 
 @app.get("/Transformations",)
 def create_transform(request: Request):
@@ -88,5 +99,56 @@ async def handle_transformations(request: Request):
             "classification_Transform.html",
             {"request": request, "images": list_images(), 'imageId':image_id,'transformedImageBase64':transformed_image_base64, "ShowResult":True},
         )
+
+
+
+@app.get("/Histogram")
+def create_histogram(request: Request):
+    
+    return templates.TemplateResponse(
+        "histogram.html",
+        {"request": request, "images": list_images()},
+    )
+
+
+@app.post("/Histogram")
+async def request_classification(request: Request):
+    form = HistogramForm(request)
+    await form.load_data()
+    image_id = form.image_id
+    histogram_type = form.histogram_type  
+    
+    if histogram_type == 'rgb':
+        histograme_load = histogram_image(img_id=image_id)
+        return templates.TemplateResponse(
+            "rgb_histogram_output.html",
+            {
+                "request": request,
+                "image_id": image_id,
+                "histogram_plot": histograme_load,
+            },
+        )
+    elif histogram_type == 'grayscale':
+        histograme_load = histogram_image(img_id=image_id)
+        return templates.TemplateResponse(
+            "grayscale_histogram_output.html",
+            {
+                "request": request,
+                "image_id": image_id,
+                "histogram_plot": histograme_load,
+            },
+        )
+    else:
+        histograme_load = histogram_image(img_id=image_id)
+        return templates.TemplateResponse(
+            "grayscale_histogram_output.html",
+            {
+                "request": request,
+                "image_id": image_id,
+
+                "histogram_plot": histograme_load,
+            },
+        )
+        
 
     

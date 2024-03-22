@@ -7,8 +7,13 @@ import json
 import logging
 import os
 import torch
+import mpld3
+import numpy as np
+import matplotlib.pyplot as plt
 from PIL import Image
 from torchvision import transforms
+from io import BytesIO
+
 
 from app.config import Configuration
 
@@ -47,12 +52,15 @@ def get_model(model_id):
         raise ImportError
 
 
+
+
 def classify_image(model_id, img_id):
     """Returns the top-5 classification score output from the
     model specified in model_id when it is fed with the
     image corresponding to img_id."""
     img = fetch_image(img_id)
     model = get_model(model_id)
+    
     model.eval()
     transform = transforms.Compose(
         (
@@ -83,3 +91,41 @@ def classify_image(model_id, img_id):
 
     img.close()
     return output
+
+
+
+def histogram_image(img_id):    
+    img1 = fetch_image(img_id)
+    
+    # Convert Pillow JpegImageFile to NumPy array
+    img_array = np.array(img1)
+
+    r = img_array[:, :, 0]
+    g = img_array[:, :, 1]
+    b = img_array[:, :, 2]
+
+    plt.subplots_adjust(hspace=0.5, wspace=0.2)
+
+    # plt.subplot(2, 2, 1)
+    # plt.title('Original Image')
+    # plt.imshow(img_array)
+
+    plt.subplot(2, 2, 1)
+    plt.title('Red Histogram')
+    hist, bins = np.histogram(r.ravel(), bins=256, range=(0, 255))
+    plt.bar(bins[:-1], hist)
+
+    plt.subplot(2, 2, 2)
+    plt.title('Green Histogram')
+    hist, bins = np.histogram(g.ravel(), bins=256, range=(0, 255))
+    plt.bar(bins[:-1], hist)
+
+    plt.subplot(2, 2, 3)
+    plt.title('Blue Histogram')
+    hist, bins = np.histogram(b.ravel(), bins=256, range=(0, 255))
+    plt.bar(bins[:-1], hist)
+
+    # Convert the matplotlib figure to HTML using mpld3
+    fig_html = mpld3.fig_to_html(plt.gcf())
+
+    return fig_html

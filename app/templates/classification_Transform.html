@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Select Model and Image</h1>
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <form id="TransformForm" method="post" novalidate>
+                    <h4>
+                        Image:
+                    </h4>
+                    <p>
+                        <select name="image_id" id="imageSelect" class="form-control">
+                            {% for image in images %}
+                                {% if image == imageId %}
+                                    <option value="{{ image }}" selected>{{ image }}</option>
+                                {% else %}
+                                    <option value="{{ image }}">{{ image }}</option>
+                                {% endif %}
+                            {% endfor %}     
+                        </select>
+                    </p>
+                    <!-- Color, Brightness, Contrast, Sharpness sliders -->
+                    <div class="form-group">
+                        <label for="colorSlider">Color:</label>
+                        <input type="range" class="form-control" id="colorSlider" name="color" min="0" max="2" step="0.1" value="0.5"  >
+                        <output>0.5</output>
+                    </div>
+                    <div class="form-group">
+                        <label for="brightnessSlider">Brightness:</label>
+                        <input type="range" class="form-control" id="brightnessSlider" name="brightness" min="0" max="2" step="0.1" value="0.5"  >
+                        <output>0.5</output>
+                      </div>
+                    <div class="form-group">
+                        <label for="contrastSlider">Contrast:</label>
+                        <input type="range" class="form-control" id="contrastSlider" name="contrast" min="0" max="2" step="0.1" value="0.5"  >
+                        <output>0.5</output>
+                    </div>
+                    <div class="form-group">
+                        <label for="sharpnessSlider">Sharpness:</label>
+                        <input type="range" class="form-control" id="sharpnessSlider" name="sharpness" min="0" max="2" step="0.1" value="0.5"  >
+                        <output>0.5</output>
+                    </div>
+                    <button type="submit" class="btn btn-dark mb-2">Apply</button>
+                </form>
+            </div>
+        <div class="col-md-6">
+            <!-- Image preview container -->
+            <div id="imagePreviewContainer" class="text-center mb-4">
+                <img id="imagePreview" src="" alt="Image Preview"  style="max-width: 50vw; max-height: 50vh;">
+            </div>
+            {% if ShowResult %}
+        
+            <!-- Transformed image preview container -->
+            <div id="transformedImagePreviewContainer" class="text-center">
+                <img id="transformedImagePreview" src="data:image/jpeg;base64,{{ transformedImageBase64 }}"  alt="Transformed Image Preview" style="max-width: 50vw; max-height: 50vh;">
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+
+
+  <script>
+    //document.addEventListener('DOMContentLoaded', function () {
+        const imageSelect = document.getElementById('imageSelect');
+        const rangeInputs = document.querySelectorAll('input[type="range"]'); //all the range sliders inputs
+        const imagePreview = document.getElementById('imagePreview');
+        const TransformedImagePreviewContainer = document.getElementById('transformedImagePreviewContainer');
+        const TansformForm = document.getElementById('TransformForm');
+        window.onload = () => {
+            const savedSelectValue = sessionStorage.getItem(imageSelect.id);
+            if (savedSelectValue) {
+                imageSelect.value = savedSelectValue;
+            }
+
+            rangeInputs.forEach((input) => {
+                const savedRangeValue = sessionStorage.getItem(input.id);
+                if (savedRangeValue) {
+                input.value = savedRangeValue;
+                rangeInputOnChange.call(input);
+                }
+            });
+            updateImagePreview(); // update image Preview once all session variables are loaded if exist 
+        };    
+        
+        imageSelect.addEventListener('change', imageSelectorOnChange);
+        rangeInputs.forEach((input) => {
+            input.addEventListener('input', rangeInputOnChange);
+        });
+
+        function updateImagePreview() {           
+            const selectedOption = imageSelect.options[imageSelect.selectedIndex];
+            const selectedImage = selectedOption.value;
+            imagePreview.src = 'static/imagenet_subset/'+ selectedImage ;
+        }
+        function imageSelectorOnChange(){
+            if (TransformedImagePreviewContainer) {
+                TransformedImagePreviewContainer.style.visibility = 'hidden';
+            }
+            sessionStorage.setItem(imageSelect.id, imageSelect.value);
+            updateImagePreview();
+        }
+        function rangeInputOnChange(){
+            sessionStorage.setItem(this.id, this.value);
+            this.nextElementSibling.value=this.value
+            }
+   // });
+  </script> 
+{% endblock %}

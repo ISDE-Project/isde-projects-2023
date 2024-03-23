@@ -1,8 +1,4 @@
 import json
-<<<<<<< HEAD
-=======
-
->>>>>>> a8b0d58a8b3cb3966f81685b7b0aaf35b687bbcf
 import os
 import random
 from typing import Dict, List
@@ -18,13 +14,6 @@ from rq.job import Job
 
 from app.config import Configuration
 from app.forms.classification_form import ClassificationForm
-<<<<<<< HEAD
-from app.forms.histogram_form import HistogramForm
-from app.ml.classification_utils import classify_image , histogram_image
-from app.utils import list_images
-import mpld3
-=======
-
 from app.forms.transformation_form import TransformationForm  
 from app.forms.histogram_form import HistogramForm
 from app.ml.classification_utils import classify_image , histogram_image
@@ -32,7 +21,6 @@ from app.utils import list_images
 from app.utils_Image import Transform_img
 import mpld3
 
->>>>>>> a8b0d58a8b3cb3966f81685b7b0aaf35b687bbcf
 
 app = FastAPI()
 config = Configuration()
@@ -88,8 +76,6 @@ async def request_classification(request: Request):
     )
 
 
-<<<<<<< HEAD
-=======
 @app.get("/Transformations",)
 def create_transform(request: Request):
     return templates.TemplateResponse(
@@ -114,16 +100,12 @@ async def handle_transformations(request: Request):
 
 
 
->>>>>>> a8b0d58a8b3cb3966f81685b7b0aaf35b687bbcf
 @app.get("/Histogram")
 def create_histogram(request: Request):
     
     return templates.TemplateResponse(
         "histogram.html",
-<<<<<<< HEAD
-        
-=======
->>>>>>> a8b0d58a8b3cb3966f81685b7b0aaf35b687bbcf
+
         {"request": request, "images": list_images()},
     )
 
@@ -166,9 +148,3 @@ async def request_classification(request: Request):
                 "histogram_plot": histograme_load,
             },
         )
-        
-<<<<<<< HEAD
-=======
-
->>>>>>> a8b0d58a8b3cb3966f81685b7b0aaf35b687bbcf
-    

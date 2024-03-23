@@ -1,4 +1,8 @@
 import json
+<<<<<<< HEAD
+=======
+
+>>>>>>> a8b0d58a8b3cb3966f81685b7b0aaf35b687bbcf
 import os
 import random
 from typing import Dict, List
@@ -6,15 +10,29 @@ from fastapi import FastAPI, Request, File, UploadFile, Form
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+
 import redis
+
 from rq import Connection, Queue
 from rq.job import Job
+
 from app.config import Configuration
 from app.forms.classification_form import ClassificationForm
+<<<<<<< HEAD
 from app.forms.histogram_form import HistogramForm
 from app.ml.classification_utils import classify_image , histogram_image
 from app.utils import list_images
 import mpld3
+=======
+
+from app.forms.transformation_form import TransformationForm  
+from app.forms.histogram_form import HistogramForm
+from app.ml.classification_utils import classify_image , histogram_image
+from app.utils import list_images
+from app.utils_Image import Transform_img
+import mpld3
+
+>>>>>>> a8b0d58a8b3cb3966f81685b7b0aaf35b687bbcf
 
 app = FastAPI()
 config = Configuration()
@@ -43,7 +61,7 @@ def home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
 
 
-@app.get("/classifications")
+@app.get("/classifications",)
 def create_classify(request: Request):
     
     return templates.TemplateResponse(
@@ -70,12 +88,42 @@ async def request_classification(request: Request):
     )
 
 
+<<<<<<< HEAD
+=======
+@app.get("/Transformations",)
+def create_transform(request: Request):
+    return templates.TemplateResponse(
+        "classification_Transform.html",
+        {"request": request, "images": list_images(), "ShowResult":False},
+    )
+
+@app.post("/Transformations")
+async def handle_transformations(request: Request):
+    form = TransformationForm(request)
+    await form.load_data()
+    if not form.is_valid():
+        return form.errors
+    else:
+        image_id = form.image_id
+        transformed_image_base64 = Transform_img(form)
+        
+        return templates.TemplateResponse(
+            "classification_Transform.html",
+            {"request": request, "images": list_images(), 'imageId':image_id,'transformedImageBase64':transformed_image_base64, "ShowResult":True},
+        )
+
+
+
+>>>>>>> a8b0d58a8b3cb3966f81685b7b0aaf35b687bbcf
 @app.get("/Histogram")
 def create_histogram(request: Request):
     
     return templates.TemplateResponse(
         "histogram.html",
+<<<<<<< HEAD
         
+=======
+>>>>>>> a8b0d58a8b3cb3966f81685b7b0aaf35b687bbcf
         {"request": request, "images": list_images()},
     )
 
@@ -119,4 +167,8 @@ async def request_classification(request: Request):
             },
         )
         
+<<<<<<< HEAD
+=======
+
+>>>>>>> a8b0d58a8b3cb3966f81685b7b0aaf35b687bbcf
     

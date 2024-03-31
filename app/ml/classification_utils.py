@@ -60,6 +60,7 @@ def classify_image(model_id, img_id, type):
     image corresponding to img_id."""
     if type == 'select':
         img = fetch_image(img_id)
+        
     else:
         img = img_id  
     model = get_model(model_id)

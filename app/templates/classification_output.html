@@ -16,9 +16,13 @@
     <div class="row">
         <div class="col">
             <div class="card">
-                <img class="large-front-thumbnail"
-                     src="{{ 'static/imagenet_subset/'+image_id }} "
-                     alt={{ image_id }}/>
+            {% if type == 'upload' %}
+                <img src="data:image/jpeg;base64,{{ image_base64 }}" class="large-front-thumbnail" alt="Uploaded Image">
+            {% else %}
+            <img class="large-front-thumbnail"
+            src="{{ 'static/imagenet_subset/'+image_id }} "
+            alt={{ image_id }}/>
+            {% endif %}
             </div>
         </div>
         <div class="col">

@@ -1,5 +1,6 @@
 import json
 import os
+
 import random
 from typing import Dict, List
 from fastapi import FastAPI, Request, File, UploadFile, Form
@@ -8,6 +9,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 import redis
+
+
 
 from rq import Connection, Queue
 from rq.job import Job
@@ -20,7 +23,9 @@ from app.ml.classification_utils import classify_image , histogram_image
 from app.utils import list_images
 from app.utils_Image import Transform_img
 import mpld3
-
+from PIL import Image
+import io
+import base64
 
 app = FastAPI()
 config = Configuration()
@@ -116,35 +121,47 @@ async def request_classification(request: Request):
     await form.load_data()
     image_id = form.image_id
     histogram_type = form.histogram_type  
+    histograme_load = histogram_image(img_id=image_id)
     
     if histogram_type == 'rgb':
-        histograme_load = histogram_image(img_id=image_id)
-        return templates.TemplateResponse(
-            "rgb_histogram_output.html",
-            {
-                "request": request,
-                "image_id": image_id,
-                "histogram_plot": histograme_load,
-            },
-        )
-    elif histogram_type == 'grayscale':
-        histograme_load = histogram_image(img_id=image_id)
-        return templates.TemplateResponse(
-            "grayscale_histogram_output.html",
-            {
-                "request": request,
-                "image_id": image_id,
-                "histogram_plot": histograme_load,
-            },
-        )
+        types = 'rgb'
     else:
-        histograme_load = histogram_image(img_id=image_id)
-        return templates.TemplateResponse(
-            "grayscale_histogram_output.html",
+        types = 'gray'
+        
+    return templates.TemplateResponse(
+            "histogram_output.html",
             {
                 "request": request,
                 "image_id": image_id,
-
+                "type": types,
                 "histogram_plot": histograme_load,
             },
         )
+
+@app.get("/picture", response_class=HTMLResponse)
+def picture(request: Request):
+    
+    return templates.TemplateResponse(
+            "import_image.html",
+            {"request": request, "models": Configuration.models},
+        )
+ 
+@app.post("/picture", response_class=HTMLResponse)
+async def upload_and_classify(request: Request, model_id: str = Form(...), file: UploadFile = File(...)):
+    
+    image_contents = await file.read()
+    image = Image.open(io.BytesIO(image_contents))
+    image_base64 = base64.b64encode(image_contents).decode('utf-8')
+
+    classification_scores = classify_image(model_id=model_id, img_id=image, type='upload')
+
+    return templates.TemplateResponse(
+        "classification_output.html",
+        {
+            "request": request,
+            "image_id": model_id,
+            "image_base64": image_base64,  
+            "type": 'upload',
+            "classification_scores": json.dumps(classification_scores),
+        },
+    )

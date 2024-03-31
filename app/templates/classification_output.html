@@ -8,7 +8,7 @@
             max-width: 100%;
             height: auto;
             display: block;
-            
+
             margin: 0 auto;
         }
 
@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="col">
-            <div class="card">
+            <div class="card mb-2">
                 <div class="row">
                     <canvas id="classificationOutput" style="width: 50%; margin: auto; padding: 20px;"></canvas>
                     <div class="align-items-center">
@@ -30,8 +30,13 @@
                         </div>
                     </div>
                 </div>
-                <a class="btn btn-primary" href="/classifications" role="button">Back</a>
-        </div>
+                    <div class="d-flex flex-column align-items-end" style="width: 100%;">
+                        <a class="btn btn-secondary mb-4" href="/classifications" role="button" style="width: 100%;">Back</a>
+                        <a id="download_json" class="btn btn-secondary mb-4 bg-dark " download="results.json" href="data:text/json;charset=utf-8,{{classification_scores}}" style="width: 60%;">Download Results</a>
+                        <a id="download_plot" class="btn btn-secondary mb-4 bg-dark" download="Plot.png" style="width: 60%;">Download Plot</a>
+                    </div>
+                
+            </div>
     </div>
     <script src="{{ "static/graph.js" }}" id="makeGraph" classification_scores="{{classification_scores}}"></script>
 {% endblock %}

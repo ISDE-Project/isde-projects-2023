@@ -4,6 +4,13 @@ $(document).ready(function () {
     var scripts = document.getElementById('makeGraph');
     var classification_scores = scripts.getAttribute('classification_scores');
     makeGraph(classification_scores);
+    setTimeout(function() {
+        //the timeout here is just to make sure the canvas has the graph plotted to avoid blank images
+        var download_plot_button = document.getElementById("download_plot");
+        var canvas = document.getElementById("classificationOutput");
+        var image = canvas.toDataURL("image/png");
+        download_plot_button.href = image;
+    }, 1000);
 });
 
 function makeGraph(results) {

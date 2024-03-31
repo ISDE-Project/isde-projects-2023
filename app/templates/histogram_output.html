@@ -1,4 +1,4 @@
-<!-- app/templates/classification_output.html -->
+<!-- app/templates/classification_output_combined.html -->
 
 {% extends "base.html" %}
 
@@ -6,29 +6,28 @@
 
 <style>
     .large-front-thumbnail {
+        
         position: relative;
         max-width: 100%;
         height: auto;
         display: block;
         margin: 0 auto;
     }
-  
 
-        canvas {
-            border: 1px solid #ddd;
-        }
+    canvas {
+        border: 1px solid #ddd;
+    }
 
-        .graph-container {
-            margin-top: 20px;
-            text-align: center;
-        }
+    .graph-container {
+        margin-top: 20px;
+        text-align: center;
+    }
 
-        .axis-title {
-            font-size: 14px;
-            font-weight: bold;
-            margin-top: 5px;
-            
-        }
+    .axis-title {
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 5px;
+    }
 </style>
 
 <div class="row">
@@ -42,15 +41,24 @@
     <div class="col">
         <div class="card">
             <div class="row">
+                <!-- If image is grayscale -->
+                {% if type == "gray" %}
                 <canvas id="canvas" width="400" height="400"></canvas>
-                
-            </div>
+                {% endif %}
+
+                <!-- If image is RGB -->
+                {% if type == "rgb" %}
+                <div id="histogramOutput">
+                    {{ histogram_plot | safe }}
+                </div>
+                {% endif %}
             </div>
             <br>
             <a class="btn btn-primary" href="/Histogram" role="button">Back</a>
         </div>
     </div>
 </div>
+
 <script>
     // Function to calculate grayscale histogram
     function calculateHistogram(imageData) {
@@ -96,6 +104,5 @@
         drawHistogram(histogram);
     };
 </script>
-
 
 {% endblock %}

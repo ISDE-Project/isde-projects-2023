@@ -41,17 +41,10 @@
     <div class="col">
         <div class="card">
             <div class="row">
-                <!-- If image is grayscale -->
-                {% if type == "gray" %}
-                <canvas id="canvas" width="400" height="400"></canvas>
-                {% endif %}
-
                 <!-- If image is RGB -->
-                {% if type == "rgb" %}
                 <div id="histogramOutput">
                     {{ histogram_plot | safe }}
                 </div>
-                {% endif %}
             </div>
             <br>
             <a class="btn btn-primary" href="/Histogram" role="button">Back</a>

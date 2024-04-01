@@ -70,7 +70,7 @@ async def request_classification(request: Request):
     await form.load_data()
     image_id = form.image_id
     model_id = form.model_id
-    classification_scores = classify_image(model_id=model_id, img_id=image_id)
+    classification_scores = classify_image(model_id=model_id, img_id=image_id,type='select')
     return templates.TemplateResponse(
         "classification_output.html",
         {

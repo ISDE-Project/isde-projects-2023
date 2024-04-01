@@ -15,6 +15,7 @@ from torchvision import transforms
 from io import BytesIO
 
 
+
 from app.config import Configuration
 
 
@@ -98,38 +99,19 @@ def classify_image(model_id, img_id, type):
 
 
 
-def histogram_image(img_id):    
+def histogram_image(img_id):
     img1 = fetch_image(img_id)
-    
-    # Convert Pillow JpegImageFile to NumPy array
-    img_array = np.array(img1)
+    # Convert Pillow JpegImageFile to grayscale NumPy array
+    img_array_gray = np.array(img1.convert('L'))
 
-    r = img_array[:, :, 0]
-    g = img_array[:, :, 1]
-    b = img_array[:, :, 2]
+    # Plot grayscale histogram
+    plt.figure(figsize=(8, 6))
+    plt.title('Grayscale Histogram')
+    plt.hist(img_array_gray.ravel(), bins=256, range=(0, 255), color='gray')
+    plt.xlabel('Pixel Intensity')
+    plt.ylabel('Frequency')
 
-    plt.subplots_adjust(hspace=0.5, wspace=0.2)
-
-    # plt.subplot(2, 2, 1)
-    # plt.title('Original Image')
-    # plt.imshow(img_array)
-
-    plt.subplot(2, 2, 1)
-    plt.title('Red Histogram')
-    hist, bins = np.histogram(r.ravel(), bins=256, range=(0, 255))
-    plt.bar(bins[:-1], hist)
-
-    plt.subplot(2, 2, 2)
-    plt.title('Green Histogram')
-    hist, bins = np.histogram(g.ravel(), bins=256, range=(0, 255))
-    plt.bar(bins[:-1], hist)
-
-    plt.subplot(2, 2, 3)
-    plt.title('Blue Histogram')
-    hist, bins = np.histogram(b.ravel(), bins=256, range=(0, 255))
-    plt.bar(bins[:-1], hist)
-
-    # Convert the matplotlib figure to HTML using mpld3
+    # Convert the matplotlib figure to HTML
     fig_html = mpld3.fig_to_html(plt.gcf())
-
+    plt.close()
     return fig_html

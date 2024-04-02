@@ -18,16 +18,9 @@
         </p>
        
     
-      <input type="hidden" name="histogram_type" id="histogram_type" value="rgb">
 
-      <button type="submit" class="btn btn-dark mb-2" onclick="setHistogramType('rgb')">RGB Histogram</button>
-      <button type="submit" class="btn btn-dark mb-2" onclick="setHistogramType('grayscale')">Grayscale Histogram</button>
+      <button type="submit" class="btn btn-dark mb-2" >Generate Grey Scale Histogram</button>
   </form>
 
-  <script>
-      function setHistogramType(type) {
-          document.getElementById('histogram_type').value = type;
-      }
-  </script>
     
 {% endblock %}

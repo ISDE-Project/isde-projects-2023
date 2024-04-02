@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import Request
+from fastapi import Request 
 
 
 class ClassificationForm:
@@ -8,11 +8,15 @@ class ClassificationForm:
         self.errors: List = []
         self.image_id: str
         self.model_id: str
+        self.uploaded_image: str
 
     async def load_data(self):
         form = await self.request.form()
         self.image_id = form.get("image_id")
         self.model_id = form.get("model_id")
+        if 'image' in form:
+            uploaded_file = form['image']
+            self.uploaded_image = await uploaded_file.read()
 
     def is_valid(self):
         if not self.image_id or not isinstance(self.image_id, str):

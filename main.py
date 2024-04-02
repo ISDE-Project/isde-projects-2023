@@ -1,7 +1,5 @@
 import json
-import os
 
-import random
 from typing import Dict, List
 from fastapi import FastAPI, Request, File, UploadFile, Form
 from fastapi.responses import HTMLResponse
@@ -21,7 +19,7 @@ from app.forms.transformation_form import TransformationForm
 from app.forms.histogram_form import HistogramForm
 from app.ml.classification_utils import classify_image , histogram_image
 from app.utils import list_images
-from app.utils_Image import Transform_img
+from app.utils_Image import Transform_img, encode_img_utf8
 import mpld3
 from PIL import Image
 import io
@@ -119,21 +117,17 @@ def create_histogram(request: Request):
 async def request_classification(request: Request):
     form = HistogramForm(request)
     await form.load_data()
-    image_id = form.image_id
-    histogram_type = form.histogram_type  
+    image_id = form.image_id 
+    print(0)
     histograme_load = histogram_image(img_id=image_id)
-    
-    if histogram_type == 'rgb':
-        types = 'rgb'
-    else:
-        types = 'gray'
+    print(1)
         
     return templates.TemplateResponse(
             "histogram_output.html",
             {
                 "request": request,
                 "image_id": image_id,
-                "type": types,
+                "type": 'rgb',
                 "histogram_plot": histograme_load,
             },
         )
@@ -147,11 +141,13 @@ def picture(request: Request):
         )
  
 @app.post("/picture", response_class=HTMLResponse)
-async def upload_and_classify(request: Request, model_id: str = Form(...), file: UploadFile = File(...)):
-    
-    image_contents = await file.read()
-    image = Image.open(io.BytesIO(image_contents))
-    image_base64 = base64.b64encode(image_contents).decode('utf-8')
+# model_id: str = Form(...), file: UploadFile = File(...)
+async def upload_and_classify(request: Request): 
+    form=ClassificationForm(request)
+    await form.load_data()
+    image = Image.open(io.BytesIO(form.uploaded_image))
+    image_base64 = encode_img_utf8(image)
+    model_id=form.model_id
 
     classification_scores = classify_image(model_id=model_id, img_id=image, type='upload')
 

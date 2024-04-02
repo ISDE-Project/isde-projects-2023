@@ -6,13 +6,11 @@ class HistogramForm:
         self.request: Request = request
         self.errors: List = []
         self.image_id: str
-        self.histogram_type: str  # Add the histogram_type attribute
 
     async def load_data(self):
         form = await self.request.form()
         self.image_id = form.get("image_id")
-        self.histogram_type = form.get("histogram_type")  # Load the histogram_type from the form
-
+       
     def is_valid(self):
         if not self.image_id or not isinstance(self.image_id, str):
             self.errors.append("A valid image id is required")

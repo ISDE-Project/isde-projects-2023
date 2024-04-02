@@ -6,12 +6,8 @@
 
 <style>
     .large-front-thumbnail {
-        
-        position: relative;
         max-width: 100%;
         height: auto;
-        display: block;
-        margin: 0 auto;
     }
 
     canvas {
@@ -31,14 +27,14 @@
 </style>
 
 <div class="row">
-    <div class="col">
+    <div class="col-md-3"> <!-- Far left small column for image -->
         <div class="card">
             <img class="large-front-thumbnail"
                  src="{{ 'static/imagenet_subset/'+image_id }} "
                  alt={{ image_id }}/>
         </div>
     </div>
-    <div class="col">
+    <div class="col-md-9"> <!-- Rest of the space for histogram column -->
         <div class="card">
             <div class="row">
                 <!-- If image is RGB -->

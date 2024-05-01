@@ -12,8 +12,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 from torchvision import transforms
-from io import BytesIO
-
 
 
 from app.config import Configuration
@@ -59,10 +57,10 @@ def classify_image(model_id, img_id, type):
     """Returns the top-5 classification score output from the
     model specified in model_id when it is fed with the
     image corresponding to img_id."""
-    if type == 'select':
+    if type == 'select': #The image is from our saved images  where the image id corresponds to one of the images on the server
         img = fetch_image(img_id)
         
-    else:
+    else: #The image is a user upload where the image_id input is an Image object instance
         img = img_id  
     model = get_model(model_id)
     
@@ -76,22 +74,22 @@ def classify_image(model_id, img_id, type):
         )
     )
 
-    # apply transform from torchvision
+    # Apply transform from torchvision
     img = img.convert("RGB")
     preprocessed = transform(img).unsqueeze(0)
 
-    # gets the output from the model
+    # Gets the output from the model
     out = model(preprocessed)
     _, indices = torch.sort(out, descending=True)
 
-    # transforms scores as percentages
+    # Transforms scores as percentages
     percentage = torch.nn.functional.softmax(out, dim=1)[0] * 100
 
-    # gets the labels
+    # Gets the labels
     labels = get_labels()
 
-    # takes the top-5 classification output and returns it
-    # as a list of tuples (label_name, score)
+    # Takes the top-5 classification output and returns it
+    # As a list of tuples (label_name, score)
     output = [[labels[idx], percentage[idx].item()] for idx in indices[0][:5]]
 
     img.close()

@@ -48,50 +48,5 @@
     </div>
 </div>
 
-<script>
-    // Function to calculate grayscale histogram
-    function calculateHistogram(imageData) {
-        const histogram = Array(256).fill(0);
-
-        for (let i = 0; i < imageData.data.length; i += 4) {
-            const grayscaleValue = Math.round((imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2]) / 3);
-            histogram[grayscaleValue]++;
-        }
-
-        return histogram;
-    }
-
-    // Function to draw grayscale histogram
-    function drawHistogram(histogram) {
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        const barWidth = canvas.width / histogram.length;
-
-        for (let i = 0; i < histogram.length; i++) {
-            const barHeight = (histogram[i] / Math.max(...histogram)) * canvas.height;
-            ctx.fillStyle = 'black';
-            ctx.fillRect(i * barWidth, canvas.height - barHeight, barWidth, barHeight);
-        }
-    }
-
-    // Load image and calculate histogram
-    const image = new Image();
-    image.src = "{{ 'static/imagenet_subset/'+image_id }}";
-
-    image.onload = function () {
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const histogram = calculateHistogram(imageData);
-
-        // Draw the histogram
-        drawHistogram(histogram);
-    };
-</script>
 
 {% endblock %}

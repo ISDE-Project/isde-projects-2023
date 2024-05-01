@@ -5,7 +5,7 @@ $(document).ready(function () {
     var classification_scores = scripts.getAttribute('classification_scores');
     makeGraph(classification_scores);
     setTimeout(function() {
-        //the timeout here is just to make sure the canvas has the graph plotted to avoid blank images
+        //the timeout is to make sure the canvas has the graph plotted before extracting it to download to avoid downloading blank images
         var download_plot_button = document.getElementById("download_plot");
         var canvas = document.getElementById("classificationOutput");
         var image = canvas.toDataURL("image/png");
